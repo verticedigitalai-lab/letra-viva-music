@@ -89,6 +89,7 @@
       color: var(--ink);
       text-decoration: none;
     }
+    .brand-logo { width: 70px; height: 70px; max-height: 80px; object-fit: contain; }
     .brand-mark { width: 31px; height: 31px; color: var(--orange); }
     .brand-name { font-size: 14px; font-weight: 750; letter-spacing: -.04em; }
     .brand-name span { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; font-weight: 600; letter-spacing: .17em; text-transform: uppercase; }
@@ -439,14 +440,17 @@
   </style>
 </head>
 <body>
+
+</head>
+<body>
   <header class="topbar">
     <div class="wrap nav">
       <a class="brand" href="#inicio" aria-label="Letra Viva Music — início">
-        <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-          <path d="M5 23.5h4l3-9 5.2 17 5.1-24 4.8 19 3.4-11 2.3 8H35" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="brand-name">Letra Viva<span>Music</span></span>
+        <img class="brand-logo" src="./assets/imagens/logo_branco.png" alt="Letra Viva Music">
+      
       </a>
+ 
+
       <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
       </button>
@@ -458,6 +462,7 @@
       </nav>
     </div>
   </header>
+
 
   <main>
     <section class="hero" id="inicio">
