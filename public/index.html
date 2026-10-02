@@ -1,55 +1,1050 @@
-const menuToggle = document.querySelector(".menu-toggle");
-const navLinks = document.querySelector(".nav-links");
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><script src="https://myhub.ia.br/canvas-vendor/tailwind.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2eb">
+  <meta name="description" content="Da primeira ideia à faixa pronta: produção musical para compositores que querem dar vida às suas canções.">
+  <title>Letra Viva Music — Sua música, em movimento</title>
 
-menuToggle.addEventListener("click", () => {
-  const isOpen = navLinks.classList.toggle("open");
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
-  menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
-});
-
-navLinks.querySelectorAll("a").forEach((link) => {
-  link.addEventListener("click", () => {
-    navLinks.classList.remove("open");
-    menuToggle.setAttribute("aria-expanded", "false");
-    menuToggle.setAttribute("aria-label", "Abrir menu");
-  });
-});
-
-document.getElementById("year").textContent = new Date().getFullYear();
-
-document.getElementById("contact-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const form = event.currentTarget;
-  const button = form.querySelector('button[type="submit"]');
-  const message = document.getElementById("form-message");
-  const data = new FormData(form);
-
-  button.disabled = true;
-  message.textContent = "Enviando sua mensagem…";
-
-  try {
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: data.get("name"),
-        email: data.get("email"),
-        project: data.get("project")
-      })
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || "Não foi possível enviar a mensagem.");
+  <style>
+    :root {
+      --paper: #f5f2eb;
+      --paper-light: #fbfaf6;
+      --ink: #20241d;
+      --muted: #686c61;
+      --green: #40533d;
+      --green-dark: #263727;
+      --orange: #e76843;
+      --line: rgba(32, 36, 29, .16);
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    message.textContent = "Mensagem enviada! Obrigado por compartilhar sua música.";
-    form.reset();
-  } catch (error) {
-    message.textContent = error.message || "Erro ao enviar. Tente novamente.";
-  } finally {
-    button.disabled = false;
-  }
-});
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    button, input, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .wrap {
+      width: min(1160px, calc(100% - 48px));
+      margin-inline: auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .16em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 22px;
+      height: 1px;
+      background: var(--orange);
+      content: "";
+    }
+
+    .serif {
+      font-family: var(--serif);
+      font-weight: 400;
+      letter-spacing: -.055em;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 50px;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 22px;
+      border: 1px solid var(--green-dark);
+      border-radius: 3px;
+      background: var(--green-dark);
+      color: var(--paper-light);
+      font-size: 13px;
+      font-weight: 650;
+      text-decoration: none;
+      transition: transform .2s ease, background .2s ease, color .2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      background: var(--green);
+    }
+
+    .button svg { width: 16px; height: 16px; }
+
+    .button-outline {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .button-outline:hover { color: white; }
+
+    .topbar {
+      position: relative;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      min-height: 78px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      display: block;
+      width: 140px;
+      max-width: 42vw;
+      max-height: 48px;
+      height: auto;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .brand-mark {
+      width: 31px;
+      height: 31px;
+      color: var(--orange);
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: -.04em;
+    }
+
+    .brand-name span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 31px;
+    }
+
+    .nav-links a {
+      color: #4f534a;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+
+    .nav-links a:hover { color: var(--orange); }
+
+    .nav-links .nav-cta {
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--ink);
+    }
+
+    .nav-links .nav-cta:hover { border-color: var(--green); }
+
+    .menu-toggle {
+      display: none;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .hero { overflow: hidden; padding: 76px 0 84px; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      align-items: center;
+      gap: 54px;
+    }
+
+    .hero-copy { position: relative; z-index: 1; }
+
+    .hero h1 {
+      max-width: 650px;
+      margin: 22px 0 20px;
+      font-size: clamp(55px, 7vw, 91px);
+      line-height: .98;
+    }
+
+    .hero h1 em {
+      color: var(--green);
+      font-style: italic;
+    }
+
+    .hero-lede {
+      max-width: 465px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .hero-note {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 27px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .note-dot {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .hero-art {
+      position: relative;
+      min-height: 490px;
+      display: grid;
+      place-items: center;
+    }
+
+    .art-frame {
+      position: relative;
+      width: min(100%, 455px);
+      aspect-ratio: .91;
+      overflow: hidden;
+      background: #e7e4d8;
+      box-shadow: 0 22px 55px rgba(38, 55, 39, .12);
+    }
+
+    .hero-video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .art-frame::before {
+      position: absolute;
+      z-index: 1;
+      inset: 15px;
+      border: 1px solid rgba(32, 36, 29, .25);
+      content: "";
+      pointer-events: none;
+    }
+
+    .art-note {
+      position: absolute;
+      right: -18px;
+      bottom: 49px;
+      display: flex;
+      width: 104px;
+      height: 104px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(32, 36, 29, .12);
+      border-radius: 50%;
+      background: var(--paper-light);
+      color: var(--green);
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(38, 55, 39, .12);
+      transform: rotate(4deg);
+    }
+
+    .art-note span {
+      max-width: 66px;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .art-note svg {
+      position: absolute;
+      top: 13px;
+      right: 17px;
+      width: 16px;
+      height: 16px;
+      color: var(--orange);
+    }
+
+    .ticker {
+      overflow: hidden;
+      border-block: 1px solid var(--line);
+      background: #eeebe3;
+    }
+
+    .ticker-inner {
+      display: flex;
+      min-width: max-content;
+      align-items: center;
+      justify-content: center;
+      gap: 29px;
+      padding: 17px 24px;
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .ticker-inner .star {
+      color: var(--orange);
+      font-size: 15px;
+    }
+
+    section { scroll-margin-top: 26px; }
+    .section { padding: 105px 0; }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 42px;
+    }
+
+    .section-heading h2 {
+      max-width: 620px;
+      margin: 15px 0 0;
+      font-size: clamp(40px, 5.4vw, 67px);
+      line-height: 1;
+    }
+
+    .section-heading p {
+      max-width: 310px;
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .services {
+      background: var(--green-dark);
+      color: var(--paper-light);
+    }
+
+    .services .eyebrow { color: #c4cfb7; }
+    .services .section-heading p { color: #c1c7b9; }
+    .services .section-heading h2 em { color: #b9c5ab; }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid rgba(255,255,255,.22);
+    }
+
+    .service-card {
+      min-height: 280px;
+      padding: 27px 27px 20px 0;
+    }
+
+    .service-card + .service-card {
+      padding-left: 27px;
+      border-left: 1px solid rgba(255,255,255,.22);
+    }
+
+    .service-num {
+      color: #e78461;
+      font-family: var(--serif);
+      font-size: 17px;
+      font-style: italic;
+    }
+
+    .service-card h3 {
+      margin: 38px 0 12px;
+      font-family: var(--serif);
+      font-size: 30px;
+      font-weight: 400;
+      letter-spacing: -.035em;
+    }
+
+    .service-card p {
+      max-width: 290px;
+      margin: 0;
+      color: #c1c7b9;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 75px;
+      align-items: start;
+    }
+
+    .process-intro h2 {
+      margin: 17px 0 18px;
+      font-size: clamp(42px, 5vw, 62px);
+      line-height: 1;
+    }
+
+    .process-intro p {
+      max-width: 340px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .steps { border-top: 1px solid var(--line); }
+
+    .step {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 18px;
+      padding: 23px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .step-number {
+      color: var(--orange);
+      font-family: var(--serif);
+      font-size: 18px;
+      font-style: italic;
+    }
+
+    .step h3 {
+      margin: 0 0 7px;
+      font-size: 16px;
+      font-weight: 680;
+    }
+
+    .step p {
+      max-width: 445px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .manifesto {
+      padding: 86px 0;
+      background: #e8e7dc;
+      text-align: center;
+    }
+
+    .manifesto blockquote {
+      max-width: 850px;
+      margin: 18px auto 0;
+      color: var(--green-dark);
+      font-size: clamp(37px, 5.5vw, 67px);
+      line-height: 1.08;
+    }
+
+    .manifesto blockquote em {
+      color: var(--orange);
+      font-style: italic;
+    }
+
+    .contact { padding: 105px 0; }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap: 78px;
+    }
+
+    .contact-copy h2 {
+      max-width: 490px;
+      margin: 16px 0 19px;
+      font-size: clamp(46px, 5.5vw, 68px);
+      line-height: .98;
+    }
+
+    .contact-copy p {
+      max-width: 380px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .contact-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 14px;
+      align-content: start;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-full { grid-column: 1 / -1; }
+
+    .field label {
+      color: #55594f;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      outline: none;
+      background: rgba(255,255,255,.37);
+      color: var(--ink);
+      font-size: 13px;
+      transition: border-color .2s ease, background .2s ease;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--green);
+      background: var(--paper-light);
+    }
+
+    .field textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .contact-form .button {
+      justify-self: start;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .contact-form .button:disabled {
+      cursor: wait;
+      opacity: .7;
+      transform: none;
+    }
+
+    .form-message {
+      grid-column: 1 / -1;
+      min-height: 18px;
+      margin: -6px 0 0;
+      color: var(--green);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .form-message.error { color: #a33d2a; }
+
+    footer { border-top: 1px solid var(--line); }
+
+    .footer-main {
+      display: flex;
+      min-height: 95px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 22px;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      font-size: 11px;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover { color: var(--orange); }
+
+    .footer-bottom {
+      padding: 15px 0;
+      border-top: 1px solid var(--line);
+      color: #777a71;
+      font-size: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .wrap { width: min(100% - 36px, 620px); }
+      .nav { min-height: 70px; }
+      .menu-toggle { display: inline-flex; }
+
+      .nav-links {
+        position: absolute;
+        top: 69px;
+        right: 0;
+        left: 0;
+        display: none;
+        align-items: stretch;
+        gap: 0;
+        padding: 10px 18px 18px;
+        border-bottom: 1px solid var(--line);
+        background: var(--paper);
+      }
+
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .nav-links a { padding: 14px 2px; }
+
+      .nav-links .nav-cta {
+        margin-top: 8px;
+        padding: 13px;
+        text-align: center;
+      }
+
+      .hero { padding: 56px 0 63px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 25px; }
+      .hero h1 { max-width: 560px; }
+      .hero-art { min-height: 0; padding: 10px 16px 10px 0; }
+      .art-frame { width: min(100%, 450px); }
+      .section { padding: 76px 0; }
+
+      .section-heading {
+        align-items: start;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 32px;
+      }
+
+      .section-heading p { max-width: 470px; }
+      .service-grid { grid-template-columns: 1fr; }
+      .service-card { min-height: 0; padding: 24px 0 28px; }
+
+      .service-card + .service-card {
+        padding-left: 0;
+        border-left: 0;
+        border-top: 1px solid rgba(255,255,255,.22);
+      }
+
+      .service-card h3 { margin-top: 23px; }
+      .process-grid, .contact-grid { grid-template-columns: 1fr; gap: 36px; }
+      .process-intro p { max-width: 470px; }
+      .manifesto { padding: 68px 0; }
+      .contact { padding: 78px 0; }
+    }
+
+    @media (max-width: 480px) {
+      .wrap { width: calc(100% - 32px); }
+      .hero h1 { font-size: clamp(49px, 14vw, 67px); }
+      .hero-lede { font-size: 14px; }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero-actions .button { width: 100%; }
+      .hero-art { padding-right: 8px; }
+      .art-note { right: -9px; bottom: 28px; width: 88px; height: 88px; }
+      .art-note span { max-width: 60px; font-size: 9px; }
+      .contact-form { grid-template-columns: 1fr; }
+      .field-full { grid-column: auto; }
+      .contact-form .button { width: 100%; }
+
+      .footer-main {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        padding: 22px 0;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .ticker-inner {
+        justify-content: flex-start;
+        gap: 18px;
+        font-size: 9px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="#inicio" aria-label="Letra Viva Music — início">
+        <img class="brand-logo" src="./assets/imagens/logo_preto.png" alt="Letra Viva Music">
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <nav class="nav-links" id="menu" aria-label="Navegação principal">
+        <a href="#sobre">A proposta</a>
+        <a href="#servicos">O que fazemos</a>
+        <a href="#processo">Como funciona</a>
+        <a class="nav-cta" href="#contato">Vamos conversar <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Produção musical para compositores</span>
+          <h1 class="serif">Sua música<br>merece <em>ganhar vida.</em></h1>
+          <p class="hero-lede">
+            Da primeira ideia à faixa pronta: transforme sua composição em uma produção que traduz o que você imaginou — e faz sentir ainda mais.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button" href="#contato">
+              Conte sua ideia
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4 10h11M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a class="button button-outline" href="#processo">Conheça o processo</a>
+          </div>
+
+          <div class="hero-note">
+            <span class="note-dot"></span>
+            Seu som, sua identidade. Produção feita junto com você.
+          </div>
+        </div>
+
+        <div class="hero-art" aria-label="Vídeo de um estúdio musical acolhedor">
+          <div class="art-frame">
+            <video
+              class="hero-video"
+              autoplay
+              muted
+              loop
+              playsinline
+              aria-label="Vídeo de um estúdio musical acolhedor">
+              <source src="./assets/video/letra-viva.mp4" type="video/mp4">
+              Seu navegador não conseguiu carregar o vídeo.
+            </video>
+          </div>
+
+          <div class="art-note">
+            <span>feito para soar como você</span>
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 1.8l1.6 5 5 1.7-5 1.6-1.6 5-1.7-5-5-1.6 5-1.7 1.7-5z" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker" aria-label="Serviços da Letra Viva Music">
+      <div class="ticker-inner">
+        <span>Composição</span><span class="star">✳</span>
+        <span>Arranjo</span><span class="star">✳</span>
+        <span>Produção</span><span class="star">✳</span>
+        <span>Identidade sonora</span><span class="star">✳</span>
+        <span>Composição</span><span class="star">✳</span>
+        <span>Arranjo</span><span class="star">✳</span>
+        <span>Produção</span>
+      </div>
+    </div>
+
+    <section class="section" id="sobre">
+      <div class="wrap">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">A proposta</span>
+            <h2 class="serif">Mais do que produzir.<br><em>Dar forma ao que você sente.</em></h2>
+          </div>
+          <p>
+            Toda canção tem um coração. Nosso trabalho é encontrar o som, os caminhos e os detalhes que ajudam esse coração a chegar até quem escuta.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section services" id="servicos">
+      <div class="wrap">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">O que fazemos</span>
+            <h2 class="serif">Seu ponto de partida.<br><em>Nosso próximo passo.</em></h2>
+          </div>
+          <p>
+            Você pode chegar com uma letra, uma melodia gravada no celular ou uma canção quase pronta. A produção começa de onde você está.
+          </p>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card">
+            <span class="service-num">01 / Ideia</span>
+            <h3>Composição &amp; desenvolvimento</h3>
+            <p>Lapidamos letras, melodias e conceitos para descobrir o que sua canção quer dizer — e como pode dizer melhor.</p>
+          </article>
+
+          <article class="service-card">
+            <span class="service-num">02 / Caminho</span>
+            <h3>Arranjo &amp; identidade</h3>
+            <p>Escolhemos referências, timbres e texturas com intenção, construindo uma direção musical que combina com você.</p>
+          </article>
+
+          <article class="service-card">
+            <span class="service-num">03 / Canção</span>
+            <h3>Produção musical</h3>
+            <p>Levamos a música do rascunho à faixa produzida, cuidando dos detalhes e mantendo sua voz no centro do processo.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="processo">
+      <div class="wrap process-grid">
+        <div class="process-intro">
+          <span class="eyebrow">Como funciona</span>
+          <h2 class="serif">Com escuta.<br><em>Com intenção.</em></h2>
+          <p>
+            Um processo colaborativo, sem fórmula pronta. A gente conversa, experimenta e constrói junto — respeitando o tempo e a personalidade de cada canção.
+          </p>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <span class="step-number">01</span>
+            <div>
+              <h3>A gente se conhece</h3>
+              <p>Você conta sobre a música, suas referências e o que gostaria de sentir ao ouvi-la pronta.</p>
+            </div>
+          </article>
+
+          <article class="step">
+            <span class="step-number">02</span>
+            <div>
+              <h3>Encontramos a direção</h3>
+              <p>Alinhamos possibilidades de arranjo, sonoridade e próximos passos para o projeto.</p>
+            </div>
+          </article>
+
+          <article class="step">
+            <span class="step-number">03</span>
+            <div>
+              <h3>A canção toma forma</h3>
+              <p>Desenvolvemos a produção em diálogo, compartilhando etapas e decisões ao longo do caminho.</p>
+            </div>
+          </article>
+
+          <article class="step">
+            <span class="step-number">04</span>
+            <div>
+              <h3>Pronta para ser ouvida</h3>
+              <p>Finalizamos os detalhes da faixa e organizamos a entrega combinada para o projeto.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="manifesto" aria-label="Manifesto da Letra Viva Music">
+      <div class="wrap">
+        <span class="eyebrow">Acreditamos nisso</span>
+        <blockquote class="serif">
+          Uma boa produção não apaga a origem da canção. Ela ajuda a <em>luz dela chegar mais longe.</em>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="contact" id="contato">
+      <div class="wrap contact-grid">
+        <div class="contact-copy">
+          <span class="eyebrow">Vamos conversar</span>
+          <h2 class="serif">Qual música está pedindo para nascer?</h2>
+          <p>
+            Conte um pouquinho sobre sua ideia. A primeira conversa é um espaço para entender a canção e imaginar possibilidades, sem compromisso.
+          </p>
+        </div>
+
+        <form class="contact-form" id="contact-form">
+          <div class="field">
+            <label for="name">SEU NOME</label>
+            <input
+              id="name"
+              name="name"
+              autocomplete="name"
+              placeholder="Como podemos te chamar?"
+              required>
+          </div>
+
+          <div class="field">
+            <label for="email">SEU E-MAIL</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="voce@email.com"
+              required>
+          </div>
+
+          <div class="field field-full">
+            <label for="project">SOBRE A SUA MÚSICA</label>
+            <textarea
+              id="project"
+              name="project"
+              placeholder="Pode ser uma letra, uma melodia, uma referência ou só uma vontade..."
+              required></textarea>
+          </div>
+
+          <button class="button" type="submit">
+            Enviar mensagem
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 10h11M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-main">
+      <a class="brand" href="#inicio" aria-label="Letra Viva Music — voltar ao início">
+        <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M5 23.5h4l3-9 5.2 17 5.1-24 4.8 19 3.4-11 2.3 8H35" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">Letra Viva<span>Music</span></span>
+      </a>
+
+      <span class="footer-note">Canções feitas com escuta, intenção e presença.</span>
+
+      <div class="footer-links">
+        <a href="#sobre">A proposta</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#contato">Contato</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="wrap">© <span id="year"></span> Letra Viva Music. Todos os direitos reservados.</div>
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navLinks = document.querySelector(".nav-links");
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = navLinks.classList.toggle("open");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+    });
+
+    navLinks.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Abrir menu");
+      });
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    document.getElementById("contact-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const message = document.getElementById("form-message");
+      const data = new FormData(form);
+
+      button.disabled = true;
+      message.classList.remove("error");
+      message.textContent = "Enviando sua mensagem…";
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.get("name"),
+            email: data.get("email"),
+            project: data.get("project")
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Não foi possível enviar a mensagem.");
+        }
+
+        message.textContent = "Mensagem enviada! Obrigado por compartilhar sua música.";
+        form.reset();
+      } catch (error) {
+        message.classList.add("error");
+        message.textContent = error.message || "Erro ao enviar. Tente novamente.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
