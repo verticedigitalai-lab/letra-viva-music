@@ -930,6 +930,16 @@
               placeholder="Como podemos te chamar?"
               required>
           </div>
+          <div class="field">
+            <label for="whatsapp">WHATSAPP (OPCIONAL)</label>
+            <input
+              id="whatsapp"
+              name="whatsapp"
+              type="tel"
+              autocomplete="tel"
+              inputmode="tel"
+              placeholder="(41) 99999-9999">
+          </div>
 
           <div class="field">
             <label for="email">SEU E-MAIL</label>
@@ -1025,8 +1035,10 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: data.get("name"),
+            whatsapp: data.get("whatsapp"),
             email: data.get("email"),
             project: data.get("project")
+
           })
         });
 

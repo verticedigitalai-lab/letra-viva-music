@@ -3,11 +3,12 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: "Método não permitido." });
   }
 
-  const { name, email, project } = req.body || {};
+  const { name, email, whatsapp, project } = req.body || {};
 
   if (
     typeof name !== "string" ||
     typeof email !== "string" ||
+    (whatsapp !== undefined && typeof whatsapp !== "string") ||
     typeof project !== "string" ||
     !name.trim() ||
     !email.trim() ||
@@ -39,6 +40,7 @@ module.exports = async (req, res) => {
         text: [
           `Nome: ${name.trim()}`,
           `E-mail: ${email.trim()}`,
+          `WhatsApp: ${whatsapp?.trim() || "Não informado"}`,
           "",
           "Sobre a música:",
           project.trim()
