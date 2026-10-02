@@ -601,7 +601,7 @@
             <input id="name" name="name" autocomplete="name" placeholder="Como podemos te chamar?" required>
           </div>
           <div class="field">
-            <label for="email">SEU E-MAIL</label>
+            <label for="email">letravivamusic@gmail.com</label>
             <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@email.com" required>
           </div>
           <div class="field field-full">
@@ -639,7 +639,7 @@
 
   <script>
     // Antes de publicar, troque pelo e-mail que receberá as mensagens.
-    const CONTACT_EMAIL = letravivamusic@gmail.com;
+    const CONTACT_EMAIL = "letravivamusic@gmail.com";
 
     const menuToggle = document.querySelector(".menu-toggle");
     const navLinks = document.querySelector(".nav-links");
@@ -660,21 +660,43 @@
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    document.getElementById("contact-form").addEventListener("submit", (event) => {
+    document.getElementById("contact-form").addEventListener("submit", async (event) => {
       event.preventDefault();
+
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
       const message = document.getElementById("form-message");
+      const data = new FormData(form);
 
-      if (CONTACT_EMAIL === "SEU_EMAIL_AQUI") {
-        message.textContent = "Para ativar o formulário, configure CONTACT_EMAIL no final do arquivo com seu e-mail de contato.";
-        return;
+      button.disabled = true;
+      message.textContent = "Enviando sua mensagem…";
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: data.get("name"),
+            email: data.get("email"),
+            project: data.get("project")
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Não foi possível enviar a mensagem.");
+        }
+
+        message.textContent = "Mensagem enviada! Obrigado por compartilhar sua música.";
+        form.reset();
+      } catch (error) {
+        message.textContent = error.message || "Erro ao enviar. Tente novamente.";
+      } finally {
+        button.disabled = false;
       }
+    });
 
-      const data = new FormData(event.currentTarget);
-      const subject = encodeURIComponent("Uma nova música — Letra Viva Music");
-      const body = encodeURIComponent(
-        `Nome: ${data.get("name")}\nE-mail: ${data.get("email")}\n\nSobre a música:\n${data.get("project")}`
-      );
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
       message.textContent = "Abrindo seu aplicativo de e-mail para enviar a mensagem.";
     });
   </script>
